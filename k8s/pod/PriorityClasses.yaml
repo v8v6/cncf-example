@@ -1,0 +1,9 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+# 优先级为100000，数字越大，优先级越高，超过一亿的数字被系统保留，用于
+#指派给系统组件
+value: 100000
+globalDefault: false
+description: "This is priority class demo."

@@ -1,0 +1,22 @@
+# 这个Ingress的定义，说明对目标地址http://mywebsite.com/demo的访问将被转发到集群中的Service webapp即webapp:8080/demo上
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mywebsite-ingress
+  annotations:
+    # 当使用无域名的Ingress转发规则时,将默认禁用非安全HTTP,强制开启HTTPS。可通过注解关闭强制启用HTTPS的设置
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    #- host:
+    - host: mywebsite.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: webapp
+                port:
+                  name: portName
+                  number: 8080
+            path: /demo
+            pathType: Prefix

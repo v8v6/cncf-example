@@ -1,0 +1,47 @@
+# docker-compose 的版本
+version: '2'
+services:
+  mqnamesrv:
+    image: apache/rocketmq:4.8.0
+    container_name: mqnamesrv
+    ports:
+      - 19876:9876
+    restart: always
+    dns:
+      - 8.8.8.8
+    # networks:
+    # - mynetwork
+    command: ["bash", "-C", "./mqnamesrv"]
+
+
+  mqborker:
+    image: apache/rocketmq:4.8.0
+    container_name: mqborker
+    ports:
+      - 10909:10909
+      - 10911:10911
+      - 10912:10912
+    restart: always
+    depends_on:
+      - mqnamesrv
+    dns:
+      - 8.8.8.8
+    # networks:
+    # - mynetwork
+    command: "bash -c './mqbroker -n mqnamesrv:9876'"
+
+
+  rocketmq-dashboard:
+    environment:
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=mqnamesrv:9876"
+    image: apacherocketmq/rocketmq-dashboard
+    container_name: rocketmq-dashboard
+    ports:
+      - 18080:8080
+    restart: always
+    depends_on:
+      - mqnamesrv
+    dns:
+      - 8.8.8.8
+    # networks:
+    # - mynetwork

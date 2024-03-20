@@ -1,0 +1,16 @@
+# 使用autoscaling/v1版本的HorizontalPodAutoscaler，需要预先安装Heapster组件或Metrics Server，用于采集Pod的CPU使用率
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  minReplicas: 1
+  maxReplicas: 2
+  # scaleTargetRef 目标作用对象
+  scaleTargetRef:
+    kind: Deployment
+    name: php-apache
+    apiVersion: apps/v1
+  # targetCPUUtilizationPercentage
+  # 期望每个Pod的CPU使用率都为50%，该使用率基于Pod设置的CPU Request值进行计算，例如该值为200m，那么系统将维持Pod的实际CPU使用值为100m。
+  targetCPUUtilizationPercentage: 50

@@ -1,0 +1,38 @@
+# 系统将针对每种类型的指标都计算Pod副本的目标数量，以最大值为准进行扩缩容操作
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  maxReplicas: 10
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+  # 目标指标值
+  metrics:
+    # 定义指标的类型
+    # Resource 资源的指标值(CPU、内存)
+    # Pods Pod的指标 全部Pod副本的指标值进行平均值计算
+    # Object某种资源对象（如Ingress）的指标或应用系统的任意自定义指标
+    - type: Object
+      object:
+        describedObject:
+          apiVersion: extensions/v1
+          kind: Ingress
+          name: main-route
+        metric:
+          name: requests-per-second
+        target:
+          value: 2k
+          # Object 类型的指标只能为 AverageValue、Value
+          type: Value
+    - type: Pods
+      resource:
+        name: packets-per-second
+        target:
+          # 目标指标平均值为1000时出发扩缩容
+          averageValue: 1k
+          # Pods 类型的指标只能为 AverageValue
+          type: AverageValue

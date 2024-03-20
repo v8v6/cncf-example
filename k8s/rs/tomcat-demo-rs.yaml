@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+# 副本控制器
+kind: ReplicaSet
+metadata:
+  # rc的名称,全局唯一
+  name: tomcat-demo-rs-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tomcat-demo-rs-v1
+  template:
+    metadata:
+      labels:
+        app: tomcat-demo-rs-v1
+    spec:
+      containers:
+        - name: tomcat-demo-rs-v1
+          image: tomcat
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: GET_HOSTS_FROM
+              value: "dns"

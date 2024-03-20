@@ -1,0 +1,44 @@
+# 获取Pod自身信息
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-test-pod
+  labels:
+    app: dapi-test-pod
+spec:
+  containers:
+    - name: dapi-test-pod
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh", "-c", "env"]
+      volumeMounts:
+        - mountPath: /etc
+          # 系统将生成/etc/labels、/etc/annotations文件
+          name: podinfo
+          readOnly: false
+      # Pod自身信息配置到环境变量
+      env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+  restartPolicy: Always
+  # Pod自身信息挂载到文件中
+  volumes:
+    - name: podinfo
+      downwardAPI:
+        items:
+          - path: labels
+            fieldRef:
+              fieldPath: metadata.labels
+          - path: annotations
+            fieldRef:
+              fieldPath: metadata.annotations

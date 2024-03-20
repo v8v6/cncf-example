@@ -1,0 +1,30 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  maxReplicas: 10
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+  # 目标指标值
+  metrics:
+    # 定义指标的类型
+    # Resource 资源的指标值(CPU、内存)
+    # Pods Pod的指标 全部Pod副本的指标值进行平均值计算
+    # Object某种资源对象（如Ingress）的指标或应用系统的任意自定义指标
+    # Kubernetes推荐尽量使用type为Object的HPA配置方式，这可以通过使用Operator模式，将外部指标通过CRD（自定义资源）定义为API资源对象来实现
+    - type: Object
+      object:
+        describedObject:
+          apiVersion: extensions/v1
+          kind: Ingress
+          name: main-route
+        metric:
+          name: requests-per-second
+        target:
+          value: 2k
+          # Object 类型的指标只能为 AverageValue、Value
+          type: Value

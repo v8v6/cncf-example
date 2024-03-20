@@ -1,0 +1,25 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  maxReplicas: 10
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+  # 目标指标值
+  metrics:
+    # 定义指标的类型
+    # Resource 资源的指标值(CPU、内存)
+    # Pods Pod的指标 全部Pod副本的指标值进行平均值计算
+    # Object某种资源对象（如Ingress）的指标或应用系统的任意自定义指标
+    - type: Pods
+      resource:
+        name: packets-per-second
+        target:
+          # 目标指标平均值为1000时出发扩缩容
+          averageValue: 1k
+          # Pods 类型的指标只能为 AverageValue
+          type: AverageValue

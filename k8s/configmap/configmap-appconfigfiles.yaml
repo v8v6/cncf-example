@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-appconfigfiles
+data:
+  key-serverxml: |
+    12121212
+
+  key-loggingproperties: "PD94bWwgdmVyc2lvbj"

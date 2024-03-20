@@ -1,0 +1,28 @@
+# kubectl label nodes node-name zone=north
+apiVersion: v1
+# 副本控制器
+kind: ReplicationController
+metadata:
+  # rc的名称,全局唯一
+  name: tomcat-demo-v1
+spec:
+  replicas: 1
+  selector:
+    app: tomcat-demo-v1
+  template:
+    metadata:
+      labels:
+        app: tomcat-demo-v1
+    spec:
+      containers:
+        - name: tomcat-demo-v1
+          image: tomcat
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: GET_HOSTS_FROM
+              value: "dns"
+      nodeSelector:
+        zone: north
+      priorityClassName: high-priority

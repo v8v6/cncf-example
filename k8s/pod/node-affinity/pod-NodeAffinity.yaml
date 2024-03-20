@@ -1,0 +1,50 @@
+apiVersion: v1
+# 副本控制器
+kind: ReplicationController
+metadata:
+  # rc的名称,全局唯一
+  name: tomcat-demo-v2
+spec:
+  replicas: 1
+  selector:
+    app: tomcat-demo-v2
+  template:
+    metadata:
+      labels:
+        app: tomcat-demo-v2
+    spec:
+      affinity:
+        # 节点亲和性
+        nodeAffinity:
+          # 必须满足
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: beta.kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+
+          # 尽量满足
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                  - key: disk-type
+                    operator: In
+                    values:
+                      - ssd
+              weight: 1
+
+
+
+      containers:
+        - name: tomcat-demo-v2
+          image: tomcat
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: GET_HOSTS_FROM
+              value: "dns"
+      nodeSelector:
+        zone: north

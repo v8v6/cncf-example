@@ -1,0 +1,28 @@
+# Pod下多容器存储卷挂载
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volume-pod
+  labels:
+    app: volume-pod
+spec:
+  containers:
+    - name: tomcat1
+      image: tomcat
+      ports:
+        - containerPort: 8080
+      imagePullPolicy: IfNotPresent
+      volumeMounts:
+        - mountPath: /usr/local/tomcat/logs
+          name: app-logs
+    - name: busybox1
+      image: busybox
+      command: ["sh", "-c", "tail -f /logs/catalina*.log"]
+      volumeMounts:
+        - mountPath: /logs
+          name: app-logs
+  restartPolicy: Always
+  volumes:
+    - name: app-logs
+      emptyDir: {}
+

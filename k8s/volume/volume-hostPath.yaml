@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath-pod
+  labels:
+    app: hostpath-pod
+spec:
+  containers:
+    - name: hostpath-cv
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh", "-c",  "sleep 6000s"]
+      volumeMounts:
+        - mountPath: /cache
+          name: cache-volume
+    - name: hostpath-cd
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: [ "/bin/sh", "-c",  "sleep 6000s" ]
+      volumeMounts:
+        - mountPath: /test
+          name: cache-volume
+  restartPolicy: Never
+  volumes:
+    - name: cache-volume
+      hostPath:
+        path: /data
+        # 目录，如果目录不存在就报错
+        type: Directory

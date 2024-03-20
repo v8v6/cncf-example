@@ -1,0 +1,35 @@
+# 污点&容忍
+
+# 创建污点
+#kubectl taint nodes k8s-worker-2 key1=value1:NoSchedule
+
+
+# 删除污点
+#kubectl taint nodes k8s-worker-2 key1-
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: taints- tolerations
+  labels:
+    app: taints-tolerations
+spec:
+  containers:
+    - name: taints-tolerations
+      image: nginx
+      imagePullPolicy: Always
+      ports:
+        - containerPort: 80
+  # pod容忍度
+  tolerations:
+    - key: "key1"
+      value: "value1"
+      # 如果不指定operator，则默认值为Equal
+      operator: "Equal"
+      # 空的effect匹配所有的effect
+      effect: "NoSchedule"
+    # 效果等同
+    # 空的key配合Exists操作符能够匹配所有的键和值
+#    - key: "key1"
+#      operator: "Exists"
+#      effect: "NoSchedule"

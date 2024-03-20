@@ -1,0 +1,33 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  maxReplicas: 10
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+  # 目标指标值
+  metrics:
+    # 定义指标的类型
+    # Resource 资源的指标值(CPU、内存)
+    # Pods Pod的指标 全部Pod副本的指标值进行平均值计算
+    # Object某种资源对象（如Ingress）的指标或应用系统的任意自定义指标
+    # External 自定义指标
+    - type: Resource
+      resource:
+        name: cpu
+        # 定义相应的指标目标值; 系统将在指标数据达到目标值时（考虑容忍度的区间，见前面算法部分的说明）触发扩缩容操作
+        target:
+          # 目标值60%
+          averageUtilization: 60
+          type: Utilization
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          # 内存平均值50Mi
+          averageValue: 50Mi
+          type: AverageValue
