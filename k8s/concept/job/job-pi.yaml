@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: process-job-pi
+  labels:
+    jobgroup: process-job-pi
+spec:
+  template:
+    metadata:
+      name: process-job-pi
+      labels:
+        jobgroup: process-job-pi
+    spec:
+      containers:
+        - name: c
+          image: busybox
+          command: ["sh", "-c", "echo Processing item cherry && sleep 5"]
+      restartPolicy: Never
+  # 并发运行的个数
+  parallelism: 2
+  # 运行任务数的总数
+  completions: 5

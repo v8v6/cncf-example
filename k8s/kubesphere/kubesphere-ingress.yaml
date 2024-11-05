@@ -3,10 +3,13 @@ kind: Ingress
 metadata:
   namespace: kubesphere-system
   name: kubesphere-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    ingress.kubernetes.io/ssl-redirect: "false"
+    kubernetes.io/ingress.class: "nginx"
 spec:
-  ingressClassName: nginx
   rules:
-  - host: kubesphere.wolfcode.cn  # 访问 Grafana 域名
+  - host: k8s.kubesphere.cn
     http:
       paths:
       - path: /

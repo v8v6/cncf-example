@@ -1,0 +1,85 @@
+# 使用minikube部署的
+# minikube start --kubernetes-version=v1.23.0 --network-plugin=cni --cni=calico --driver=hyperv --disk-size=30g --memory=16384 --cpus=4 --profile=k8s-hyperv
+
+# 加载images
+# minikube image load gitlab/gitlab-ce:15.6.0-ce.0 -p k8s-hyperv
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitlab-svc
+spec:
+  selector:
+    name: gitlab
+  ports:
+    - name: gitlab-80
+      port: 80
+      nodePort: 30021
+    - name: gitlab-22
+      port: 22
+      nodePort: 30022
+  type: NodePort
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitlab-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+    limits:
+      storage: 30Gi
+  storageClassName: standard
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab
+  labels:
+    name: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: gitlab
+  template:
+    metadata:
+      name: gitlab
+      labels:
+        name: gitlab
+    spec:
+      containers:
+        - name: gitlab
+          image: gitlab/gitlab-ce:15.6.0-ce.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: gitlab-80
+              containerPort: 80
+            - name: gitlab-22
+              containerPort: 22
+            - name: gitlab-443
+              containerPort: 443
+          volumeMounts:
+            - name: gen-dir
+              mountPath: /var/opt/gitlab
+              subPath: data
+            - name: gen-dir
+              mountPath: /etc/gitlab
+              subPath: conf
+            - name: gen-dir
+              mountPath: /var/log/gitlab
+              subPath: logs
+            - name: localtime
+              mountPath: /etc/localtime
+      volumes:
+        - name: gen-dir
+          persistentVolumeClaim:
+            claimName: gitlab-pvc
+        - name: localtime
+          hostPath:
+            path: /etc/localtime

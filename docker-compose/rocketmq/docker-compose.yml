@@ -6,11 +6,11 @@ services:
     container_name: mqnamesrv
     ports:
       - 19876:9876
-    restart: always
     dns:
       - 8.8.8.8
-    # networks:
-    # - mynetwork
+    networks:
+      - default
+      - dev
     command: ["bash", "-C", "./mqnamesrv"]
 
 
@@ -21,27 +21,50 @@ services:
       - 10909:10909
       - 10911:10911
       - 10912:10912
-    restart: always
+    volumes:
+      - ./conf/broker.conf:/etc/rocketmq/broker.conf
     depends_on:
       - mqnamesrv
     dns:
       - 8.8.8.8
-    # networks:
-    # - mynetwork
+    networks:
+      - default
+      - dev
     command: "bash -c './mqbroker -n mqnamesrv:9876'"
 
 
   rocketmq-dashboard:
     environment:
       JAVA_OPTS: "-Drocketmq.namesrv.addr=mqnamesrv:9876"
-    image: apacherocketmq/rocketmq-dashboard
+    image: apacherocketmq/rocketmq-dashboard:1.0.0
     container_name: rocketmq-dashboard
     ports:
       - 18080:8080
-    restart: always
+
     depends_on:
       - mqnamesrv
     dns:
       - 8.8.8.8
-    # networks:
-    # - mynetwork
+    networks:
+      - default
+      - dev
+
+  # rocketmq-exporter 采集器里面配置的域名是mqnamesrv:9876
+  rocketmq-exporter:
+    image: junxchen/rocketmq-exporter:v0.0.2
+    container_name: rocketmq-exporter
+    ports:
+      - 15557:5557
+
+    depends_on:
+      - mqborker
+    dns:
+      - 8.8.8.8
+    networks:
+     - default
+     - dev
+
+networks:
+  dev:
+    external:
+      name: dev

@@ -1,0 +1,23 @@
+# 暂时没有测试ingress 是否正确
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: harbor-ingress
+  annotations:
+    # 当使用无域名的Ingress转发规则时,将默认禁用非安全HTTP,强制开启HTTPS。可通过注解关闭强制启用HTTPS的设置
+    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+    #- host:
+    - host: k8s.harbor.cn
+      http:
+        paths:
+          - backend:
+              service:
+                name: harbor-svc
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix

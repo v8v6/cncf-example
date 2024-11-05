@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: service-reader-binding
+  namespace: kube-system
+# 目标主体：要授权的对象
+# Group（用户组）、User（某个具体用户）和Service Account（Pod应用所使用的账号）
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: kube-system
+roleRef:
+  kind: Role
+  name: service-reader
+  apiGroup: rbac.authorization.k8s.io

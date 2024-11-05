@@ -8,7 +8,7 @@ metadata:
     version: v3.3.1
 spec:
   persistence:
-    storageClass: ""        # If there is no default StorageClass in your cluster, you need to specify an existing StorageClass here.
+    storageClass: "nfs-client"        # If there is no default StorageClass in your cluster, you need to specify an existing StorageClass here.
   authentication:
     # adminPassword: ""     # Custom password of the admin user. If the parameter exists but the value is empty, a random password is generated. If the parameter does not exist, P@88w0rd is used.
     jwtSecret: ""           # Keep the jwtSecret consistent with the Host Cluster. Retrieve the jwtSecret by executing "kubectl -n kubesphere-system get cm kubesphere-config -o yaml | grep -v "apiVersion" | grep jwtSecret" on the Host Cluster.
@@ -78,7 +78,7 @@ spec:
     # webhook:
     #   resources: {}
   devops:                  # (CPU: 0.47 Core, Memory: 8.6 G) Provide an out-of-the-box CI/CD system based on Jenkins, and automated workflow tools including Source-to-Image & Binary-to-Image.
-    enabled: true             # Enable or disable the KubeSphere DevOps System.
+    enabled: false             # Enable or disable the KubeSphere DevOps System.
     # resources: {}
     jenkinsMemoryLim: 8Gi      # Jenkins memory limit.
     jenkinsMemoryReq: 4Gi   # Jenkins memory request.
@@ -94,7 +94,7 @@ spec:
     #   replicas: 2
     #   resources: {}
   logging:                 # (CPU: 57 m, Memory: 2.76 G) Flexible logging functions are provided for log query, collection and management in a unified console. Additional log collectors can be added, such as Elasticsearch, Kafka and Fluentd.
-    enabled: true         # Enable or disable the KubeSphere Logging System.
+    enabled: false         # Enable or disable the KubeSphere Logging System.
     logsidecar:
       enabled: true
       replicas: 2
@@ -102,7 +102,7 @@ spec:
   metrics_server:                    # (CPU: 56 m, Memory: 44.35 MiB) It enables HPA (Horizontal Pod Autoscaler).
     enabled: false                   # Enable or disable metrics-server.
   monitoring:
-    storageClass: ""                 # If there is an independent StorageClass you need for Prometheus, you can specify it here. The default StorageClass is used by default.
+    storageClass: "nfs-client"                 # If there is an independent StorageClass you need for Prometheus, you can specify it here. The default StorageClass is used by default.
     node_exporter:
       port: 9100
       # resources: {}

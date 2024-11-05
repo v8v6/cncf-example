@@ -12,6 +12,7 @@
         <module>docker-compose</module>
         <module>k8s</module>
         <module>docker</module>
+        <module>swarm</module>
     </modules>
 
     <properties>

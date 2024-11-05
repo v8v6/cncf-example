@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvc-openebs-pod
+  labels:
+    app: pvc-openebs-pod
+spec:
+  containers:
+    - name: pvc-openebs-container
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh", "-c",  "sleep 6000s"]
+      volumeMounts:
+        - mountPath: /cache
+          name: cache-volume
+  restartPolicy: Always
+  volumes:
+    - name: cache-volume
+      persistentVolumeClaim:
+        claimName: local-hostpath-pvc

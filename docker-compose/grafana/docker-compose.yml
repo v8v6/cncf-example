@@ -1,0 +1,18 @@
+version: '3'
+services:
+  grafana:
+    # 默认密码: admin:admin
+    container_name: grafana
+    image: grafana/grafana:10.0.12
+    dns:
+      - 8.8.8.8
+    ports:
+      - 13000:3000
+
+    networks:
+      - dev
+      - default
+networks:
+  dev:
+    external:
+      name: dev

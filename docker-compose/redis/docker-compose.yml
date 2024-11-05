@@ -1,15 +1,36 @@
 version: '2'
 services:
-  redis:
+  redis7:
     image: redis:7.2.4-alpine
-    container_name: redis
+    container_name: redis7
     ports:
       - 16379:6379
-    restart: always
+
     dns:
       - 8.8.8.8
+    networks:
+      - default
+      - dev
     # 如果需要进行配置密码相关,需要进行映射配置
     volumes:
-      - .\\redis\\conf:/etc/redis/
-      #- .\\redis\\data:/data
+      - .\\conf:/etc/redis/
+      #- .\\data:/data
     command: ["redis-server", "/etc/redis/redis.conf"]
+
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.58.0
+    container_name: redis_exporter
+    ports:
+      - 19121:9121
+    environment:
+      - REDIS_ADDR=redis://redis7:6379
+      - REDIS_PASSWORD=Gq@vNoyqnLINJs8WiALtn1
+    dns:
+      - 8.8.8.8
+    networks:
+      - default
+      - dev
+networks:
+  dev:
+    external:
+      name: dev

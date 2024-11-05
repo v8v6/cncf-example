@@ -1,0 +1,36 @@
+version: "2"
+services:
+  elasticsearch7:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.18
+    container_name: elasticsearch7
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    ports:
+      - 19200:9200
+      - 19300:9300
+    networks:
+      - default
+      - dev
+
+
+  elasticsearch7-exporter:
+    image: quay.io/prometheuscommunity/elasticsearch-exporter:v1.7.0
+    container_name: elasticsearch7-exporter
+    command:
+      - '--es.uri=http://elasticsearch7:9200'
+    ports:
+      - 19114:9114
+    networks:
+      - default
+      - dev
+
+networks:
+  dev:
+    external: true
+
+
+volumes:
+  data01:
+    driver: local

@@ -1,0 +1,44 @@
+version: "2"
+services:
+  mariadb11:
+    image: mariadb:11.3.2
+    container_name: mariadb11
+    
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+    volumes:
+      - C:\\dev\\docker\\mariadb11\\data:/var/lib/mysql:Z
+    ports:
+      - 13106:3306
+    networks:
+      - default
+      - dev
+
+  adminer:
+    image: adminer:4.8.1
+    
+    ports:
+      - 13206:8080
+
+    # 先需要进行授权访问
+    # CREATE USER 'exporter'@'%' IDENTIFIED BY 'exporter';
+    # GRANT PROCESS, REPLICATION CLIENT ON *.* TO 'exporter'@'%';
+  mariadb11_exporter:
+    image: prom/mysqld-exporter:v0.15.1
+    container_name: mariadb11_exporter
+    ports:
+      - 29104:9104
+    #environment:
+      #- DATA_SOURCE_NAME=exporter:exporter@(mariadb11:3306)
+    volumes:
+      - .\mysql-exporter\conf\kibana.yml:/.kibana.yml
+    dns:
+      - 8.8.8.8
+    networks:
+      - default
+      - dev
+
+networks:
+  dev:
+    external:
+      name: dev

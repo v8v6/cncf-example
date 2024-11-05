@@ -1,0 +1,46 @@
+version: "2"
+services:
+  mysql57:
+    image: mysql:5.7.20
+    container_name: mysql57
+    
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - .\\conf://etc/mysql/mysql.conf.d
+      - C:\\dev\\docker\\mysql57\\data:/var/lib/mysql
+    ports:
+      - 13105:3306
+    networks:
+      - default
+      - dev
+
+  adminer:
+    image: adminer:4.8.1
+    
+    ports:
+      - 13205:8080
+
+  # 先需要进行授权访问
+  # CREATE USER 'exporter'@'%' IDENTIFIED BY 'exporter';
+  # GRANT PROCESS, REPLICATION CLIENT ON *.* TO 'exporter'@'%';
+  mysql57_exporter:
+    image: prom/mysqld-exporter:v0.15.1
+    container_name: mysql57_exporter
+    ports:
+      - 19104:9104
+    #environment:
+      #- DATA_SOURCE_NAME:"exporter:exporter@(mysql57:3306)/"
+    volumes:
+      - .\mysql-exporter\conf\kibana.yml:/.kibana.yml
+    dns:
+      - 8.8.8.8
+    networks:
+      - default
+      - dev
+
+networks:
+  dev:
+    external:
+      name: dev
